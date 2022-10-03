@@ -9,6 +9,10 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+container:
+  image: registry.redhat.io/advanced-cluster-security/rhacs-roxctl-rhel8:3.71
+  endpoint: registry.redhat.io
+  
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
