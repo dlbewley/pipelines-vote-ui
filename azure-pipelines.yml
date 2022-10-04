@@ -23,7 +23,5 @@ jobs:
           chmod 755 roxctl
         displayName: 'Download latest roxctl'
 
-  - job: TestRoxctl
-    steps:
       - script: ./roxctl --help
         displayName: 'Attempt roxctl exec'
