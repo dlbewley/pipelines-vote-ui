@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, make_response, g, send_from_directory
+from helpers.middleware import setup_metrics
 import os
 import socket
 import random
@@ -12,6 +13,7 @@ option_b = os.getenv('OPTION_B', u"Dog 🐶")
 hostname = socket.gethostname()
 
 app = Flask(__name__)
+setup_metrics(app)
 
 
 @app.route("/", methods=['POST','GET'])
@@ -53,6 +55,10 @@ def votes():
 def send_js(path):
     return send_from_directory('templates', path)
 
+CONTENT_TYPE_LATEST = str('text/plain; version=0.0.4; charset=utf-8')
+@app.route('/metrics/')
+def metrics():
+    return Response(prometheus_client.generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)
