@@ -8,6 +8,8 @@ REQUEST_COUNT = Counter(
     ['app_name', 'method', 'endpoint', 'http_status']
 )
 
+APP_NAME = 'vote-ui'
+
 REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency',
     ['app_name', 'endpoint']
 )
@@ -17,11 +19,11 @@ def start_timer():
 
 def stop_timer(response):
     resp_time = time.time() - request.start_time
-    REQUEST_LATENCY.labels('test_app', request.path).observe(resp_time)
+    REQUEST_LATENCY.labels(APP_NAME, request.path).observe(resp_time)
     return response
 
 def record_request_data(response):
-    REQUEST_COUNT.labels('test_app', request.method, request.path,
+    REQUEST_COUNT.labels(APP_NAME, request.method, request.path,
             response.status_code).inc()
     return response
 
