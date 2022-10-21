@@ -1,0 +1,16 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: pipelines-vote-ui
+  name: pipelines-vote-ui
+spec:
+  endpoints:
+  - interval: 30s
+    # must be the port NAME not number
+    port: 8080-tcp
+    scheme: http
+  selector:
+    matchLabels:
+      app: pipelines-vote-ui
