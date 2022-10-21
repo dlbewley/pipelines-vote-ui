@@ -56,7 +56,7 @@ def votes():
 def send_js(path):
     return send_from_directory('templates', path)
 
-@app.route('/metrics/')
+@app.route('/metrics')
 def metrics():
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
