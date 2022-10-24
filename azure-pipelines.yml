@@ -47,6 +47,9 @@ jobs:
             --output=json
             # > $(System.DefaultWorkingDirectory)/artifacts/image_scan.json
         displayName: 'RHACS image scan'
+        env: 
+          ROX_API_TOKEN: '$(rox-api-token)'
+          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
 
       - script: |          
           ./roxctl image check \
