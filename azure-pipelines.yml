@@ -16,18 +16,20 @@ pool:
 
 # https://mirror.openshift.com/pub/rhacs/assets/latest/bin/Linux/roxctl
 jobs:
-  - job: GetRoxctl
+
+  - job: RHACS-Image-Scan
     steps:
-      - displayName: 'Download latest roxctl'
-        script: |
+      - script: |
           curl -O https://mirror.openshift.com/pub/rhacs/assets/latest/bin/Linux/roxctl
           chmod 755 roxctl
+        displayName: 'Download latest roxctl'
 
-      - displayName: 'RHACS image scan'
-        env: 
-          ROX_API_TOKEN: $(rox-api-token)
-          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
-        script: |
+      - script: |
           mkdir $(System.DefaultWorkingDirectory)/artifacts
           ./roxctl image scan -e $ROX_CENTRAL_ENDPOINT --image vulnerables/cve-2017-7494 --format csv > $(System.DefaultWorkingDirectory)/artifacts/image_scan.csv
           ./roxctl image check -e $ROX_CENTRAL_ENDPOINT --image vulnerables/cve-2017-7494 > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
+        displayName: 'RHACS image scan'
+        env: 
+          ROX_API_TOKEN: $(rox-api-token)
+          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
+        
