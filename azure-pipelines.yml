@@ -29,6 +29,7 @@ jobs:
 
       - script: |
           echo $ROX_API_TOKEN | wc -c # test
+          
           mkdir $(System.DefaultWorkingDirectory)/artifacts
 
           ./roxctl image scan \
