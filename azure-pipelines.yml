@@ -28,15 +28,20 @@ jobs:
         displayName: 'Download latest roxctl'
 
       - script: |
-          echo $ROX_API_TOKEN | wc -c # test
-          echo $ROX_CENTRAL_ENDPOINT
-          echo rox api token '$(rox-api-token)'
-          echo rox central endpoint '$(rox-central-endpoint)'
+          echo "env $ROX_API_TOKEN "
+          echo "env $ROX_CENTRAL_ENDPOINT"
+          echo "macro rox api token '$(rox-api-token)'"
+          echo "macro rox central endpoint '$(rox-central-endpoint)'"
         displayName: 'Check Variables'
+        env: 
+          ROX_API_TOKEN: '$(rox-api-token)'
+          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
 
       - script: |          
           mkdir $(System.DefaultWorkingDirectory)/artifacts
-
+          echo "env $ROX_CENTRAL_ENDPOINT"
+          echo "env $ROX_API_TOKEN"
+          
           ./roxctl image scan \
             -e $ROX_CENTRAL_ENDPOINT \
             --image vulnerables/cve-2017-7494 \
