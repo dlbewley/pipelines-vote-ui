@@ -30,8 +30,6 @@ jobs:
       - script: |
           echo "env $ROX_API_TOKEN "
           echo "env $ROX_CENTRAL_ENDPOINT"
-          echo "macro rox api token '$(rox-api-token)'"
-          echo "macro rox central endpoint '$(rox-central-endpoint)'"
         displayName: 'Check Variables'
         env: 
           ROX_API_TOKEN: '$(rox-api-token)'
@@ -39,17 +37,19 @@ jobs:
 
       - script: |          
           mkdir $(System.DefaultWorkingDirectory)/artifacts
-          echo "env $ROX_CENTRAL_ENDPOINT"
+          curl -k "https://$ROX_CENTRAL_ENDPOINT"
           echo "env $ROX_API_TOKEN"
           
           ./roxctl image scan \
-            -e $ROX_CENTRAL_ENDPOINT \
-            --image vulnerables/cve-2017-7494 \
+            --endpoint=$ROX_CENTRAL_ENDPOINT \
+            --insecure-skip-tls-verify=true \
+            --image=vulnerables/cve-2017-7494 \
             --output=csv > $(System.DefaultWorkingDirectory)/artifacts/image_scan.csv
 
           ./roxctl image check \
-            -e $ROX_CENTRAL_ENDPOINT \
-            --image vulnerables/cve-2017-7494 > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
+            --endpoint=$ROX_CENTRAL_ENDPOINT \
+            --insecure-skip-tls-verify=true \
+            --image=vulnerables/cve-2017-7494 > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
             
         displayName: 'RHACS image scan'
         env: 
