@@ -11,7 +11,11 @@ pool:
 
 variables:
   - group: rhacs-integration
-  
+  - name: rox-central-endpoint
+    value: $[variables.rox-central-endpoint]
+  - name: rox-api-token
+    value: $[variables.rox-api-token]
+
 # container:
 #  image: registry.redhat.io/advanced-cluster-security/rhacs-roxctl-rhel8:3.71
 #  endpoint: registry.redhat.io
@@ -30,6 +34,8 @@ jobs:
       - script: |
           echo $ROX_API_TOKEN | wc -c # test
           echo $ROX_CENTRAL_ENDPOINT
+          echo rox api token '$(rox-api-token)'
+          echo rox central endpoint '$(rox-central-endpoint)'
         displayName: 'Check Variables'
 
       - script: |          
