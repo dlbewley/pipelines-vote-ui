@@ -29,7 +29,10 @@ jobs:
 
       - script: |
           echo $ROX_API_TOKEN | wc -c # test
-          
+          echo $ROX_CENTRAL_ENDPOINT
+        displayName: 'Check Variables'
+
+      - script: |          
           mkdir $(System.DefaultWorkingDirectory)/artifacts
 
           ./roxctl image scan \
