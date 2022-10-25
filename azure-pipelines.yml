@@ -1,0 +1,76 @@
+trigger:
+- azure-pipelines
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: rhacs-integration
+
+# Azure Pipelines do not permit you to set 'entrypoint' on a container so we may not use
+# the prebuilt roxctl container.
+#
+# container:
+#  image: registry.redhat.io/advanced-cluster-security/rhacs-roxctl-rhel8:3.71
+#  endpoint: registry.redhat.io
+#  options: --entrypoint="" # inneffectual
+
+# https://mirror.openshift.com/pub/rhacs/assets/latest/bin/Linux/roxctl
+jobs:
+
+  - job: Build_Image
+  
+    steps:
+    - task: ContainerBuild@0
+      inputs:
+        dockerRegistryServiceConnection: 'quay.io'
+        repository: 'dbewley/pipelines-vote-ui'
+        Dockerfile: 'Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          azure
+
+  - job: RHACS_Image_Scan
+
+    steps:
+      - script: |
+          curl -O '$(rox-download)'
+          chmod 755 roxctl
+        displayName: 'Download latest RHACS roxctl'
+
+      - script: |
+          if [ -z "$ROX_API_TOKEN" -o -z "$ROX_CENTRAL_ENDPOINT" ]; then
+            echo "Ensure 'rox-api-token' and 'rox-central-endpoint' variables are defined."
+            exit 1
+          else
+            echo "Using RHACS Central $ROX_CENTRAL_ENDPOINT"
+          fi
+        displayName: 'Check for RHACS Variables'
+        env: 
+          ROX_API_TOKEN: '$(rox-api-token)'
+          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
+
+      - script: |          
+          # mkdir $(System.DefaultWorkingDirectory)/artifacts
+          ./roxctl image scan \
+            --endpoint=$ROX_CENTRAL_ENDPOINT \
+            --insecure-skip-tls-verify=true \
+            --image=vulnerables/cve-2017-7494 \
+            --output=json
+            # > $(System.DefaultWorkingDirectory)/artifacts/image_scan.json
+        displayName: 'RHACS image scan'
+        env: 
+          ROX_API_TOKEN: '$(rox-api-token)'
+          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
+
+      - script: |          
+          ./roxctl image check \
+            --endpoint=$ROX_CENTRAL_ENDPOINT \
+            --insecure-skip-tls-verify=true \
+            --output=table \
+            --image=vulnerables/cve-2017-7494
+            # > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
+        displayName: 'RHACS image policy check'
+        env: 
+          ROX_API_TOKEN: '$(rox-api-token)'
+          ROX_CENTRAL_ENDPOINT: '$(rox-central-endpoint)'
