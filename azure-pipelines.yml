@@ -17,7 +17,10 @@ variables:
 
 # https://mirror.openshift.com/pub/rhacs/assets/latest/bin/Linux/roxctl
 jobs:
+
   - job: Build_Image
+  
+    steps:
     - task: ContainerBuild@0
       inputs:
         dockerRegistryServiceConnection: 'quay.io'
