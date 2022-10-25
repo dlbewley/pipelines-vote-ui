@@ -17,12 +17,21 @@ variables:
 
 # https://mirror.openshift.com/pub/rhacs/assets/latest/bin/Linux/roxctl
 jobs:
+  - job: Build_Image
+    - task: ContainerBuild@0
+      inputs:
+        dockerRegistryServiceConnection: 'quay.io'
+        repository: 'dbewley/pipelines-vote-ui'
+        Dockerfile: 'Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          azure
 
   - job: RHACS_Image_Scan
 
     steps:
       - script: |
-          curl -O https://mirror.openshift.com/pub/rhacs/assets/latest/bin/Linux/roxctl
+          curl -O '$(rox-download)'
           chmod 755 roxctl
         displayName: 'Download latest RHACS roxctl'
 
